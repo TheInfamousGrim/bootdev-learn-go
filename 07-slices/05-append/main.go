@@ -12,30 +12,57 @@ type cost struct {
 
 func modifyCost(c *cost, value float64) {
 	c.value = value
-	return
 }
 
 func getCostsByDay(costs []cost) []float64 {
 	var totalCostsPerDay []cost
-
-    // Sort the costs
-    
+	maxDay := 0
 
 	// Find the max day
 	for i := 0; i < len(costs); i++ {
 		// Find the day in totalCostsPerDay
-		totalCostsIndex := slices.IndexFunc(totalCostsPerDay, func(tC cost) bool {
-			return tC.day == costs[i].day
+		totalCostsIndex := slices.IndexFunc(totalCostsPerDay, func(totalCost cost) bool {
+			return totalCost.day == costs[i].day
 		})
 
 		if totalCostsIndex != -1 {
 			currCost := totalCostsPerDay[totalCostsIndex]
+			newCost := currCost.value + costs[i].value
 
-			modifyCost(&currCost, currCost.value+costs[i].value)
-		} else if tot
+			modifyCost(&totalCostsPerDay[totalCostsIndex], newCost)
+		} else {
+			totalCostsPerDay = append(totalCostsPerDay, costs[i])
+		}
+
+		maxDay = int(math.Max(float64(costs[i].day), float64(maxDay)))
 	}
 
-	// Create the array
+	//* daily costs
+	var dailyCosts []float64
+	for i := 0; i <= maxDay; i++ {
+		// Find the costs for the current day
+		currentDayCostIdx := slices.IndexFunc(totalCostsPerDay, func(totalCost cost) bool {
+			return totalCost.day == i
+		})
 
-	return nil
+		if currentDayCostIdx != -1 {
+			dailyCosts = append(dailyCosts, totalCostsPerDay[currentDayCostIdx].value)
+		} else {
+			dailyCosts = append(dailyCosts, 0.0)
+		}
+	}
+
+	return dailyCosts
+}
+
+func easyGetCostsByDay(costs []cost) []float64 {
+	costsByDay := []float64{}
+	for i := 0; i < len(costs); i++ {
+		cost := costs[i]
+		for cost.day >= len(costsByDay) {
+			costsByDay = append(costsByDay, 0.0)
+		}
+		costsByDay[cost.day] += cost.value
+	}
+	return costsByDay
 }
