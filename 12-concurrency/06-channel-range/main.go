@@ -1,6 +1,9 @@
 package main
 
+import "fmt"
+
 func concurrentFib(n int) []int {
+	fmt.Println("Calculating Fibonacci sequence...")
 	ch := make(chan int)
 	var numSlice []int
 	go fibonacci(n, ch)
